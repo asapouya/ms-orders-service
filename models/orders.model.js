@@ -1,6 +1,6 @@
 const {Schema, model} = require("mongoose");
 
-const userSchema = new Schema({
+const ordersSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         required: true
@@ -11,6 +11,11 @@ const userSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "fulfilled", "canceled"]
+        enum: ["pending", "fulfilled", "canceled"],
+        default: "pending"
     }
-})
+});
+
+const Orders = model("orders", ordersSchema);
+
+module.exports = Orders;
