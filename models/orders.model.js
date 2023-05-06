@@ -6,7 +6,7 @@ const ordersSchema = new Schema({
         required: true
     },
     bookId: {
-        type: [Schema.Types.ObjectId],
+        type: [String],
         required: true
     },
     status: {

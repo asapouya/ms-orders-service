@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const ordersRoute = require("./routes/orders.routes");
+const DBconnection = require("./models/db.connection");
+
+DBconnection();
 
 app.use(express.json());
 

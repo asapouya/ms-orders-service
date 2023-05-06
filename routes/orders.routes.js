@@ -9,10 +9,9 @@ const {
     get_orders
 } = require("../controllers/orders.controllers");
 
-router.get("/", (req, res) => res.send("hello from orders-service"));
 
 router.post("/:bookId", create_order);
-router.put("/:orderId/:bookId", update_order);
+router.patch("/:orderId/:bookId", update_order);
 router.delete("/:orderId", delete_order);
 router.get("/:orderId", get_order);
 router.get("/", get_orders);
