@@ -11,8 +11,12 @@ const ordersSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "fulfilled", "canceled"],
+        enum: ["pending", "fulfilled"],
         default: "pending"
+    },
+    dateOfpurchase: {
+        type: Date,
+        default: null
     }
 });
 
