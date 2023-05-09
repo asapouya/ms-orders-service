@@ -31,7 +31,7 @@ module.exports = {
                 eventName: "finalize.order",
                 data: {
                     userId: user._id,
-                    reason: "user-deleted",
+                    reason: "order-finalized",
                     timestamp: Date.now()
                 }
             }), "");
@@ -40,7 +40,7 @@ module.exports = {
                 eventName: "finalize.order",
                 data: {
                     userId: user._id,
-                    reason: "user-deleted",
+                    reason: "order-finalized",
                     timestamp: Date.now()
                 }
             }), "");
