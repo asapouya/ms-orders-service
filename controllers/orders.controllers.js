@@ -1,4 +1,5 @@
 const Orders = require("../models/orders.model");
+const { finalize_order } = require("../services/orders.service");
 
 module.exports = {
     async create_order(req, res) {
@@ -83,22 +84,7 @@ module.exports = {
             res.status(400).send(err.message);
         }
     },
-    async finalize_order(req, res) {
-        try {
-            const userHeader = req.header("x-user")
-            const userId = userHeader._id;
-            const orderId = req.params.orderId;
-            const finalized_order = await Orders.updateOne({_id: orderId, userId: userId},[
-                {$set: {status: "fulfilled", dateOfPurchase: new Date()}} 
-            ]);
-            if(!finalized_order) return res.status(404).send("Order not found.");
-
-            //publish message to books service to cache the purchased books for the user
-            //publish message to users service to add listed books to the db for the user
-    
-            res.send(finalized_order);
-        } catch (err) {
-            res.status(400).send(err.message);
-        }
+    finalize_order(req, res) {
+        finalize_order(req, res);
     }
 }
