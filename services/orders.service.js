@@ -4,7 +4,7 @@ module.exports = {
     async finalize_order(req, res) {
         let broker = null;
         try {
-            const userHeader = req.header("x-user")
+            const userHeader = req.header("x-user");
             const userId = userHeader._id;
             const orderId = req.params.orderId;
             const finalized_order = await Orders.updateOne({_id: orderId, userId: userId},[
@@ -31,6 +31,7 @@ module.exports = {
                 eventName: "finalize.order",
                 data: {
                     userId: user._id,
+                    books: finalized_order.bookId,
                     reason: "order-finalized",
                     timestamp: Date.now()
                 }
@@ -40,6 +41,7 @@ module.exports = {
                 eventName: "finalize.order",
                 data: {
                     userId: user._id,
+                    books: finalized_order.bookId,
                     reason: "order-finalized",
                     timestamp: Date.now()
                 }

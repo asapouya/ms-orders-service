@@ -22,40 +22,48 @@ module.exports = {
         }
     },
     async update_order(req, res) {
-        const orderId = req.params.orderId;
-        const bookId = req.params.bookId;
-        const userHeader = JSON.parse(req.header("x-user"));            
-        const userId = userHeader._id;
+        try {
+            const orderId = req.params.orderId;
+            const bookId = req.params.bookId;
+            const userHeader = JSON.parse(req.header("x-user"));            
+            const userId = userHeader._id;
+            
+            const order = await Orders.findById(orderId);
+            if(!order) return res.status(404).send("Order not found.");
+            if(order.userId != userId) return res.status(401).send("Unauthorized.");
 
-        const order = await Orders.findById(orderId);
-        if(!order) return res.status(404).send("Order not found.");
-        if(order.userId != userId) return res.status(401).send("Unauthorized.");
-        if(!req.query) {
-            order.bookId.push(bookId);
-            const updatedOrder = await order.save();
-            return res.send(updatedOrder);
-        }
-        if(req.query.remove) {
-            const index = array.indexOf(bookId);
-            if (index > -1) {
-                order.bookId.splice(index, 1);
-                if(order.bookId.length == 0) {
-                    await Orders.findByIdAndRemove(order._id);
-                    return res.status(200);
+            if(req.query.remove) {
+
+                console.group("remove")
+                const index = order.bookId.indexOf(bookId);
+                if (index > -1) {
+                    order.bookId.splice(index, 1);
+                    if(order.bookId.length == 0) {
+                        await Orders.findByIdAndRemove(order._id);
+                        return res.status(204).end();
+                    }
+                    const Updated = await order.save();
+                    res.send(Updated);
                 }
-                const Updated = await order.save();
-                res.send(Updated);
+            } else {
+                console.log("add")
+                order.bookId.push(bookId);
+                const updatedOrder = await order.save();
+                return res.send(updatedOrder);
             }
+        } catch (err) {
+            res.status(400).send(err.message);
         }
     },
     async delete_order(req, res) {
         try {
+            const userHeader = JSON.parse(req.header("x-user"));            
             const orderId = req.params.orderId;
-            const userId = req.user._id;
-            const order = await Orders.findById(orderId);
-            if(!order.userId == userId) return res.status(401).send("Unauthorized.");
-            const deletedOrder = await order.deleteOne();
-            res.send(deletedOrder);
+            const userId = userHeader._id;
+            const order = await Orders.findOneAndDelete({userId: userId, _id: orderId});
+            if(!order) return res.status(404).send("Order Not Found.");
+            if(order.status == "pending") return order.status = "canceled";
+            res.send(order);
         } catch (err) {
             res.status(400).send(err.message);
         }
