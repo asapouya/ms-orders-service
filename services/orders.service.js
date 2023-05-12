@@ -1,8 +1,12 @@
 const BrokerRepo = require("../repositories/broker.repo");
 
-module.exports = {
+class OrdersService {
+
+    constructor() {
+        this.broker = new BrokerRepo();
+    }
+
     async finalize_order(req, res) {
-        let broker = null;
         try {
             const userHeader = req.header("x-user");
             const userId = userHeader._id;
@@ -17,16 +21,14 @@ module.exports = {
             const booksQueueName = "books.finalize.order.queue";
             const usersQueueName = "users.finalize.order.queue";
 
-            broker = new BrokerRepo(config.get("broker_url"));
-            await broker.connect();
-            await broker.createChannel();
-            broker.errorEvent(err => console.log(err));
-            await broker.createExchange(exchangeType ,exchangeName, { durable: true });
-            await broker.createQueue(booksQueueName, { durable: true });
-            await broker.createQueue(usersQueueName, { durable: true });
-            await broker.bindQueueToExchange(booksQueueName, exchangeName, "");
-            await broker.bindQueueToExchange(usersQueueName, exchangeName, "");
-            broker.publishMessage(exchangeName, JSON.stringify({
+            await this.broker.createChannel();
+            this.broker.errorEvent(err => console.log(err));
+            await this.broker.createExchange(exchangeType ,exchangeName, { durable: true });
+            await this.broker.createQueue(booksQueueName, { durable: true });
+            await this.broker.createQueue(usersQueueName, { durable: true });
+            await this.broker.bindQueueToExchange(booksQueueName, exchangeName, "");
+            await this.broker.bindQueueToExchange(usersQueueName, exchangeName, "");
+            this.broker.publishMessage(exchangeName, JSON.stringify({
 
                 eventName: "finalize.order",
                 data: {
@@ -36,7 +38,7 @@ module.exports = {
                     timestamp: Date.now()
                 }
             }), "");
-            broker.publishMessage(exchangeName, JSON.stringify({
+            this.broker.publishMessage(exchangeName, JSON.stringify({
 
                 eventName: "finalize.order",
                 data: {
@@ -49,10 +51,25 @@ module.exports = {
             res.send(finalized_order);
         } catch (err) {
             res.status(400).send(err.message);
-        }finally {
-            if(broker) {
-                broker.close().catch(err => console.log(err));
-            }
         }
     }
+
+    async handle_user_deletion() {
+        //listen for messages on rabbitmq
+        await this.broker.createChannel();
+        await this.broker.listenForMessage("orders.user.delete.queue", async (msg) => {
+            console.log(`message from users-service ${msg}`);
+            try {
+
+                //handle message 
+    
+                this.broker.ack(msg);
+            } catch (err) {
+                console.log(err);
+                this.broker.noAck(msg);
+            }
+        })
+    }
 }
+
+module.exports = OrdersService;

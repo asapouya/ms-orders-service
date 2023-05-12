@@ -1,14 +1,24 @@
+const config = require("config");
+
 class BrokerRepo {
     
     constructor(connectionString) {
-        this.connectionString = connectionString;
         this.connection = null;
         this.channel = null;
+        if(connectionString) this.connectionString = connectionString;
+        else this.connection = config.get("broker_url");
+        this.connect();
     }
     async connect() {
-        this.connection = await require("amqplib").connect(this.connectionString);
-        console.log("1. connected to rabbitMQ");
+        try {
+            this.connection = await require("amqplib").connect(this.connectionString);
+            console.log("1. connected to rabbitMQ");
+        } catch (err) {
+            console.log(err);
+        }
     }
+
+
     async createChannel() {
         this.channel = await this.connection.createChannel();
     }
@@ -18,7 +28,7 @@ class BrokerRepo {
 
     returnEvent(callBack) {
         this.channel.on("return", (message) => {
-            console.log("...........")
+            console.log("...........");
             callBack(message);
         })
     }
@@ -49,6 +59,20 @@ class BrokerRepo {
     async close() {
         await this.channel.close();
         await this.connection.close();
+    }
+    async listenForMessage(queueName, callBack) {
+        await this.channel.consume(queueName, async (msg) => {
+            await callBack(msg);
+        });
+    }
+    async ack(msg) {
+        await this.channel.ack(msg);
+        console.log("message ackowleged.")
+    }
+
+    async noAck(msg) {
+        await this.channel.nack(msg, false, true);
+        console.log("message requeued.");
     }
 }
 module.exports = BrokerRepo;

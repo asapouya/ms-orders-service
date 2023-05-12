@@ -1,7 +1,13 @@
 const Orders = require("../models/orders.model");
-const { finalize_order } = require("../services/orders.service");
+const { finalize_order, handle_user_deletion } = require("../services/orders.service");
+
 
 module.exports = {
+
+    handle_user_deletion() {
+        handle_user_deletion();
+    },
+
     async create_order(req, res) {
         try {
             const userHeader = JSON.parse(req.header("x-user"));            
