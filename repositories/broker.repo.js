@@ -2,75 +2,83 @@ const config = require("config");
 
 class BrokerRepo {
     
-    constructor(connectionString) {
+    constructor() {
         this.connection = null;
         this.channel = null;
-        if(connectionString) this.connectionString = connectionString;
-        else this.connection = config.get("broker_url");
+        this.connectionString = config.get("broker_url");
         this.connect();
     }
-    async connect() {
+
+    connect = async () => {
         try {
             this.connection = await require("amqplib").connect(this.connectionString);
-            console.log("1. connected to rabbitMQ");
+            console.log('\x1b[33m%s\x1b[0m', "1. connected to rabbitMQ");
         } catch (err) {
             console.log(err);
         }
     }
 
-
-    async createChannel() {
+    createChannel = async () => {
         this.channel = await this.connection.createChannel();
     }
-    async createConfirmChannel() {
+
+    createConfirmChannel = async () => {
         this.channel = await this.connection.createConfirmChannel();
     }
 
-    returnEvent(callBack) {
+    returnEvent = (callBack) => {
         this.channel.on("return", (message) => {
             console.log("...........");
             callBack(message);
         })
     }
-    errorEvent(callBack) {
+
+    errorEvent = (callBack) => {
         this.channel.on("error", (err) => {
             callBack(err);
         })
     }
 
-    async createExchange(exchangeType, exchangeName, options) {
+    createExchange = async (exchangeType, exchangeName, options) => {
         await this.channel.assertExchange(exchangeName, exchangeType, options);
         console.log("3. exchange created");
     }
-    async createQueue(queueName, options) {
+
+    createQueue = async (queueName, options) => {
         await this.channel.assertQueue(queueName, options);
         console.log("4. queue created");
     }
-    async bindQueueToExchange(queueName, exchangeName, bindingKey){
+
+    bindQueueToExchange = async (queueName, exchangeName, bindingKey) => {
         await this.channel.bindQueue(queueName, exchangeName, bindingKey);
         console.log("5. queue binded to exchange");
     }
-    publishMessage(exchangeName, message, routingKey, options) {
+
+    publishMessage = (exchangeName, message, routingKey, options) => {
         return this.channel.publish(exchangeName, routingKey, Buffer.from(message), options); /**{ mandetory: true, immediate: false }**/
     }
-    async waitForConfirms() {
+
+    waitForConfirms = async () => {
         await this.channel.waitForConfirms();
     }
-    async close() {
+
+    close = async () => {
         await this.channel.close();
         await this.connection.close();
     }
-    async listenForMessage(queueName, callBack) {
+
+    listenForMessage = async (queueName, callBack) => {
         await this.channel.consume(queueName, async (msg) => {
             await callBack(msg);
         });
     }
-    async ack(msg) {
+
+    ack = async (msg) => {
         await this.channel.ack(msg);
         console.log("message ackowleged.")
     }
 
-    async noAck(msg) {
+    noAck = async (msg) => {
         await this.channel.nack(msg, false, true);
         console.log("message requeued.");
     }

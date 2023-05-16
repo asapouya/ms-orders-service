@@ -1,12 +1,10 @@
-const BrokerRepo = require("../repositories/broker.repo");
-
 class OrdersService {
 
-    constructor() {
-        this.broker = new BrokerRepo();
+    constructor({BrokerRepo}) {
+        this.broker = BrokerRepo;
     }
 
-    async finalize_order(req, res) {
+    finalize_order = async (req, res) => {
         try {
             const userHeader = req.header("x-user");
             const userId = userHeader._id;
@@ -54,7 +52,7 @@ class OrdersService {
         }
     }
 
-    async handle_user_deletion() {
+    handle_user_deletion = async () => {
         //listen for messages on rabbitmq
         await this.broker.createChannel();
         await this.broker.listenForMessage("orders.user.delete.queue", async (msg) => {

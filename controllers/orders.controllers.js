@@ -1,14 +1,21 @@
 const Orders = require("../models/orders.model");
-const { finalize_order, handle_user_deletion } = require("../services/orders.service");
 
+class OrdersController {
 
-module.exports = {
+    constructor({OrdersService}) {
+        this.OrdersService = OrdersService;
+        this.handle_user_deletion();
+    }
 
-    handle_user_deletion() {
-        handle_user_deletion();
-    },
+    handle_user_deletion = () => {
+        this.OrdersService.handle_user_deletion()
+    }
+    
+    finalize_order = (req, res) => {
+        this.OrdersService.finalize_order(req, res);
+    }
 
-    async create_order(req, res) {
+    create_order = async (req, res) => {
         try {
             const userHeader = JSON.parse(req.header("x-user"));            
             const userId = userHeader._id;
@@ -26,8 +33,9 @@ module.exports = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    },
-    async update_order(req, res) {
+    }
+
+    update_order= async (req, res) => {
         try {
             const orderId = req.params.orderId;
             const bookId = req.params.bookId;
@@ -60,8 +68,9 @@ module.exports = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    },
-    async delete_order(req, res) {
+    }
+
+    delete_order = async (req, res) => {
         try {
             const userHeader = JSON.parse(req.header("x-user"));            
             const orderId = req.params.orderId;
@@ -73,8 +82,9 @@ module.exports = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    },
-    async get_order(req, res) {
+    }
+
+    get_order = async (req, res) => {
 
         try {
             const userHeader = JSON.parse(req.header("x-user"));            
@@ -87,8 +97,9 @@ module.exports = {
             res.status(400).send(err.message);
         }
 
-    },
-    async get_orders(req, res) {
+    }
+
+    get_orders = async (req, res) => {
         try {
             const userHeader = req.header("x-user");
             const userId = userHeader._id;
@@ -97,8 +108,8 @@ module.exports = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    },
-    finalize_order(req, res) {
-        finalize_order(req, res);
     }
+
 }
+
+module.exports = OrdersController
