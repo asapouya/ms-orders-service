@@ -2,28 +2,16 @@ const config = require("config");
 
 class BrokerRepo {
     
-    constructor() {
-        //singleton
-        const instance = this.constructor.instance;
-        if(instance) return instance;
+    constructor({ RabbitMQConnection }) {
         
-        this.connection = null;
+        this.rabbitMQConnection = RabbitMQConnection;
         this.channel = null;
         this.connectionString = config.get("broker_url");
-        this.connect();
-
-        this.constructor.instance = this;
+        
+        this.connection = this.rabbitMQConnection.connect();
     }
 
-    connect = async () => {
-        try {
-            this.connection = await require("amqplib").connect(this.connectionString);
-            console.log('\x1b[33m%s\x1b[0m', "1. connected to rabbitMQ");
-            console.log(this.connection)
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    
 
     createChannel = async () => {
         this.channel = await this.connection.createChannel();
