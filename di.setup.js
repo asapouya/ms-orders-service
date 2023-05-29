@@ -1,4 +1,4 @@
-const {createContainer, Lifetime, asClass, InjectionMode} = require("awilix");
+const {createContainer, asClass, InjectionMode} = require("awilix");
 const BrokerRepo = require("./repositories/broker.repo");
 const OrdersService = require("./services/orders.service");
 const OrdersController = require("./controllers/orders.controllers");
@@ -10,12 +10,10 @@ const container = createContainer({
 
 function setup() {
     container.register({
+        RabbitMQConnection: asClass(RabbitMQConnection).singleton(),
         BrokerRepo: asClass(BrokerRepo),
         OrdersService: asClass(OrdersService),
-        OrdersController: asClass(OrdersController),
-        RabbitMQConnection: asClass(RabbitMQConnection).singleton(),
-    },{
-        lifetime: Lifetime.TRANSIENT
+        OrdersController: asClass(OrdersController)
     })
 }
 

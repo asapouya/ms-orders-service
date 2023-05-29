@@ -4,7 +4,6 @@ class OrdersController {
 
     constructor({OrdersService}) {
         this.OrdersService = OrdersService;
-        // this.handle_user_deletion();
     }
 
     handle_user_deletion = () => {
@@ -20,9 +19,6 @@ class OrdersController {
             const userHeader = JSON.parse(req.header("x-user"));            
             const userId = userHeader._id;
             const bookId = req.params.bookId;
-
-            console.log(userHeader);
-            console.log(userId);
 
             const order = new Orders({
                 userId: userId,
@@ -60,7 +56,6 @@ class OrdersController {
                     res.send(Updated);
                 }
             } else {
-                console.log("add")
                 order.bookId.push(bookId);
                 const updatedOrder = await order.save();
                 return res.send(updatedOrder);

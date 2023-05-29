@@ -54,19 +54,23 @@ class OrdersService {
 
     handle_user_deletion = async () => {
         //listen for messages on rabbitmq
-        await this.broker.createChannel();
+        const channel = await this.broker.createChannel();
+        this.broker.errorEvent(err => {
+            console.log(err);
+        })
         await this.broker.listenForMessage("orders.user.delete.queue", async (msg) => {
-            console.log(`message from users-service ${msg}`);
+            console.log(JSON.parse(msg.content.toString()));
             try {
-
+                
                 //handle message 
-    
+                
                 this.broker.ack(msg);
             } catch (err) {
                 console.log(err);
                 this.broker.noAck(msg);
             }
         })
+
     }
 }
 

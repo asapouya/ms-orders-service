@@ -1,29 +1,25 @@
-const config = require("config");
+
 
 class BrokerRepo {
     
-    constructor({ RabbitMQConnection }) {
-        
+    constructor({ RabbitMQConnection }) { 
         this.rabbitMQConnection = RabbitMQConnection;
+        this.connection = this.rabbitMQConnection.getConnection;
         this.channel = null;
-        this.connectionString = config.get("broker_url");
-        
-        this.connection = this.rabbitMQConnection.connect();
     }
-
     
-
     createChannel = async () => {
         this.channel = await this.connection.createChannel();
+        console.log("2. channel created.");
     }
 
     createConfirmChannel = async () => {
         this.channel = await this.connection.createConfirmChannel();
+        console.log("2. channel created.");
     }
 
     returnEvent = (callBack) => {
         this.channel.on("return", (message) => {
-            console.log("...........");
             callBack(message);
         })
     }
@@ -63,6 +59,7 @@ class BrokerRepo {
     }
 
     listenForMessage = async (queueName, callBack) => {
+        console.log("listening for messages.")
         await this.channel.consume(queueName, async (msg) => {
             await callBack(msg);
         });
