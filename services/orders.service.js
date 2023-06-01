@@ -1,7 +1,8 @@
 class OrdersService {
 
-    constructor({BrokerRepo}) {
+    constructor({BrokerRepo, MongoRepo}) {
         this.broker = BrokerRepo;
+        this.mongo = MongoRepo;
     }
 
     finalize_order = async (req, res) => {
@@ -36,16 +37,6 @@ class OrdersService {
                     timestamp: Date.now()
                 }
             }), "");
-            this.broker.publishMessage(exchangeName, JSON.stringify({
-
-                eventName: "finalize.order",
-                data: {
-                    userId: user._id,
-                    books: finalized_order.bookId,
-                    reason: "order-finalized",
-                    timestamp: Date.now()
-                }
-            }), "");
             res.send(finalized_order);
         } catch (err) {
             res.status(400).send(err.message);
@@ -54,23 +45,26 @@ class OrdersService {
 
     handle_user_deletion = async () => {
         //listen for messages on rabbitmq
-        const channel = await this.broker.createChannel();
-        this.broker.errorEvent(err => {
-            console.log(err);
-        })
-        await this.broker.listenForMessage("orders.user.delete.queue", async (msg) => {
-            console.log(JSON.parse(msg.content.toString()));
-            try {
-                
-                //handle message 
-                
-                this.broker.ack(msg);
-            } catch (err) {
+        try {
+            await this.broker.createChannel();
+            this.broker.errorEvent(err => {
                 console.log(err);
-                this.broker.noAck(msg);
-            }
-        })
-
+            })
+            await this.broker.listenForMessage("orders.user.delete.queue", async (msg) => {
+                const content = JSON.parse(msg.content.toString());
+                const userIdToBeDeleted = content.data.userId;
+                try {
+                    const order = await this.mongo.deleteMany({userId: userIdToBeDeleted}); 
+                    console.log(order);                   
+                    this.broker.ack(msg);
+                } catch (err) {
+                    console.log(err);
+                    this.broker.noAck(msg);
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
 

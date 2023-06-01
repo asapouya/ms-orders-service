@@ -1,1 +1,0 @@
-//extract database queries here.

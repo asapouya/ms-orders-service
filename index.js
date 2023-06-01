@@ -1,13 +1,10 @@
 const express = require("express");
 const app = express();
-const DBconnection = require("./models/db.connection");
 const initFunctions = require("./init");
 const {setup} = require("./di.setup");
 
 setup();
 initFunctions();
-DBconnection();
-
 
 app.use(express.json());
 

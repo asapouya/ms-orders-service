@@ -3,6 +3,8 @@ const BrokerRepo = require("./repositories/broker.repo");
 const OrdersService = require("./services/orders.service");
 const OrdersController = require("./controllers/orders.controllers");
 const RabbitMQConnection = require("./repositories/rabbitmq.connection");
+const MongoConnection = require("./repositories/mongo.connection");
+const MongoRepo = require("./repositories/mongo.repo.js");
 
 const container = createContainer({
     injectionMode: InjectionMode.PROXY
@@ -11,6 +13,8 @@ const container = createContainer({
 function setup() {
     container.register({
         RabbitMQConnection: asClass(RabbitMQConnection).singleton(),
+        MongoConnection: asClass(MongoConnection).singleton(),
+        MongoRepo: asClass(MongoRepo),
         BrokerRepo: asClass(BrokerRepo),
         OrdersService: asClass(OrdersService),
         OrdersController: asClass(OrdersController)

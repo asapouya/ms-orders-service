@@ -16,7 +16,7 @@ class RabbitMQConnection {
         if(RabbitMQConnection.connection){
             return RabbitMQConnection.connection;
         }
-        RabbitMQConnection.connection = await require("amqplib").connect("amqp://localhost");
+        RabbitMQConnection.connection = await require("amqplib").connect(config.get("rabbitmq_url"));
         console.log('\x1b[33m%s\x1b[0m', "Connected to rabbitMQ.");
     }
 
