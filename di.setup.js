@@ -1,5 +1,5 @@
 const {createContainer, asClass, InjectionMode} = require("awilix");
-const BrokerRepo = require("./repositories/broker.repo");
+const BrokerRepo = require("./repositories/rabbittmq.repo");
 const OrdersService = require("./services/orders.service");
 const OrdersController = require("./controllers/orders.controllers");
 const RabbitMQConnection = require("./repositories/rabbitmq.connection");
