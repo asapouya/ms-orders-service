@@ -1,14 +1,14 @@
 const express = require("express");
 const app = express();
-const initFunctions = require("./init");
-const {setup} = require("./di.setup");
+const {diSetup} = require("./di.setup");
 
-setup();
-initFunctions();
+diSetup().then(() => {
+    
+    app.use(express.json());
+    app.use("/orders", require("./routes/orders.routes"));
 
-app.use(express.json());
+})
 
-app.use("/orders", require("./routes/orders.routes"));
 
 const port = process.env.PORT | 6000;
 app.listen(port, () => console.info(`orders-service listening on port ${port}...`));

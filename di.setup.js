@@ -1,4 +1,4 @@
-const {createContainer, asClass, InjectionMode} = require("awilix");
+const {createContainer, asClass, InjectionMode, asValue} = require("awilix");
 const BrokerRepo = require("./repositories/broker.repo");
 const OrdersService = require("./services/orders.service");
 const OrdersController = require("./controllers/orders.controllers");
@@ -10,15 +10,20 @@ const container = createContainer({
     injectionMode: InjectionMode.PROXY
 });
 
-function setup() {
+async function diSetup() {
+
+    const rabbitMQConnection = new RabbitMQConnection();
+    const mongoConnection = new MongoConnection();
+    await mongoConnection.connect();
+    await rabbitMQConnection.connect();
+
     container.register({
-        RabbitMQConnection: asClass(RabbitMQConnection).singleton(),
-        MongoConnection: asClass(MongoConnection).singleton(),
+        RabbitMQConnection: asValue(rabbitMQConnection.getConnection),
+        OrdersController: asClass(OrdersController),
         MongoRepo: asClass(MongoRepo),
         BrokerRepo: asClass(BrokerRepo),
         OrdersService: asClass(OrdersService),
-        OrdersController: asClass(OrdersController)
     })
 }
 
-module.exports = {container, setup};   
+module.exports = {container, diSetup};   

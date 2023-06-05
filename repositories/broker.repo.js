@@ -3,12 +3,12 @@
 class BrokerRepo {
     
     constructor({ RabbitMQConnection }) { 
-        this.rabbitMQConnection = RabbitMQConnection;
-        this.connection = this.rabbitMQConnection.getConnection;
+        this.connection = RabbitMQConnection;
         this.channel = null;
     }
     
     createChannel = async () => {
+        console.log(this.connection)
         this.channel = await this.connection.createChannel();
         console.log("2. channel created.");
     }

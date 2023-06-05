@@ -10,7 +10,7 @@ class OrdersService {
             const userHeader = req.header("x-user");
             const userId = userHeader._id;
             const orderId = req.params.orderId;
-            const finalized_order = await Orders.updateOne({_id: orderId, userId: userId},[
+            const finalized_order = await this.mongo.updateOne({_id: orderId, userId: userId},[
                 {$set: {status: "fulfilled", dateOfPurchase: new Date()}} 
             ]);
             if(!finalized_order) return res.status(404).send("Order not found.");
@@ -31,7 +31,7 @@ class OrdersService {
 
                 eventName: "finalize.order",
                 data: {
-                    userId: user._id,
+                    userId: finalized_order.userId,
                     books: finalized_order.bookId,
                     reason: "order-finalized",
                     timestamp: Date.now()
@@ -39,6 +39,7 @@ class OrdersService {
             }), "");
             res.send(finalized_order);
         } catch (err) {
+            console.log(err);
             res.status(400).send(err.message);
         }
     }

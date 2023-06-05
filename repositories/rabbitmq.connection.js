@@ -2,16 +2,12 @@ const config = require("config");
 
 class RabbitMQConnection {
 
-    // static connection = undefined;
-    
     constructor() {
-        const instance = this.constructor.instance;
-        if(instance){
-            return instance;
-        }
-        this.constructor.instance = this;
+        const instance = this.constructor.instance
+        if(instance) return instance;
+        this.constructor.instance = this
     }
-
+    
     async connect() {
         if(RabbitMQConnection.connection){
             return RabbitMQConnection.connection;
@@ -21,7 +17,8 @@ class RabbitMQConnection {
     }
 
     get getConnection() {
-        return RabbitMQConnection.connection
+        if(!RabbitMQConnection) throw new Error("There is no connection!");
+        return RabbitMQConnection.connection;
     }
 }
 
