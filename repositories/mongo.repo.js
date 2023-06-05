@@ -7,8 +7,8 @@ class MongoRepo {
     async deleteMany(filters) {
         return await Orders.deleteMany(filters);
     }
-    async updateOne (filters, updateObj) {
-        return await Orders.updateOne(filters, updateObj);
+    async updateOne(filters, updateObj) {
+        return await Orders.updateOne(filters, updateObj)
     }
 }
 

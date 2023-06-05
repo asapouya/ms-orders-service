@@ -31,7 +31,7 @@ class OrdersService {
 
                 eventName: "finalize.order",
                 data: {
-                    userId: user._id,
+                    userId: finalized_order.userId,
                     books: finalized_order.bookId,
                     reason: "order-finalized",
                     timestamp: Date.now()
