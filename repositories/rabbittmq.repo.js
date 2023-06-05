@@ -2,7 +2,7 @@
 class BrokerRepo {
         
     constructor({RabbitMQConnection}) { 
-        this.connection = RabbitMQConnection
+        this.connection = RabbitMQConnection.getConnection;
         this.channel = null;
     }
     
