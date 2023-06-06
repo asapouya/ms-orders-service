@@ -9,6 +9,6 @@ router.patch("/:orderId/:bookId", ordersController.update_order);
 router.delete("/:orderId", /****/ ordersController.delete_order);
 router.get("/:orderId", /*******/ ordersController.get_order);
 router.get("/", /***************/ ordersController.get_orders);
-router.post("/finalize/:ordreId", ordersController.finalize_order);
+router.post("/finalize/:orderId", ordersController.finalize_order);
 
 module.exports = router;

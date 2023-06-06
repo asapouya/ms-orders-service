@@ -7,10 +7,11 @@ class OrdersService {
 
     finalize_order = async (req, res) => {
         try {
-            const userHeader = req.header("x-user");
+            const userHeader = JSON.parse(req.header("x-user"))
+
             const userId = userHeader._id;
             const orderId = req.params.orderId;
-            const finalized_order = await this.mongo.updateOne({_id: orderId, userId: userId},[
+            const finalized_order = await this.mongo.findOneAndUpdate({_id: orderId, userId: userId, status: "pending"},[
                 {$set: {status: "fulfilled", dateOfPurchase: new Date()}} 
             ]);
             if(!finalized_order) return res.status(404).send("Order not found.");

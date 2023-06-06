@@ -11,7 +11,6 @@ const ordersSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "fulfilled"],
         default: "pending"
     },
     dateOfpurchase: {

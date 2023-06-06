@@ -10,6 +10,9 @@ class MongoRepo {
     async updateOne(filters, updateObj) {
         return await Orders.updateOne(filters, updateObj)
     }
+    async findOneAndUpdate(filters, updateObj) {
+        return await Orders.findOneAndUpdate(filters, updateObj)
+    }
 }
 
 module.exports = MongoRepo;
