@@ -5,6 +5,7 @@ const OrdersController = require("./controllers/orders.controllers");
 const RabbitMQConnection = require("./repositories/rabbitmq.connection");
 const MongoConnection = require("./repositories/mongo.connection");
 const MongoRepo = require("./repositories/mongo.repo.js");
+const Orders = require("./models/orders.model");
 
 const container = createContainer({
     injectionMode: InjectionMode.PROXY
@@ -18,6 +19,7 @@ async function diSetup() {
     await rabbitMQConnection.connect();
 
     container.register({
+        OrdersModel: asValue(Orders),
         RabbitMQConnection: asValue(rabbitMQConnection.getConnection),
         OrdersController: asClass(OrdersController),
         MongoRepo: asClass(MongoRepo),
