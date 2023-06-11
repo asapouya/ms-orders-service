@@ -2,6 +2,7 @@ class OrdersController {
 
     constructor({OrdersService}) {
         this.OrdersService = OrdersService;
+        this.handle_user_deletion();
     }
 
     handle_user_deletion = () => {

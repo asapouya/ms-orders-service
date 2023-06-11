@@ -7,7 +7,6 @@ class BrokerRepo {
     }
     
     createChannel = async () => {
-        console.log(this.connection);
         this.channel = await this.connection.createChannel();
         console.log("2. channel created.");
     }
